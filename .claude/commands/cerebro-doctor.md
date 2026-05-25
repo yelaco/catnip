@@ -152,7 +152,7 @@ Expected: all required sections and task fields are present.
 
 ```bash
 test -f .cerebro/docs/skill-policy.md
-rg -n "Skill Policy|Skills are optional" .cerebro/cerebro-identity.md .claude/agents/wolverine.md .claude/agents/storm.md .claude/agents/sage.md .cerebro/docs/skill-policy.md
+rg -n "Skill Policy|Skills are optional" .cerebro/cerebro-identity.md .claude/agents/wolverine.md .claude/agents/storm.md .claude/agents/sage.md
 ```
 
 Expected: core policy exists and key skill-using agents mention that skills are optional.

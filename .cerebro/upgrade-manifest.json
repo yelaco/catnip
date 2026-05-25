@@ -37,11 +37,6 @@
       "notes": "Team run manifest template — always synced from upstream"
     },
     {
-      "path": ".cerebro/docs/skill-policy.md",
-      "ownership": "template",
-      "notes": "Canonical skill policy doc — always synced from upstream"
-    },
-    {
       "path": ".cerebro/cerebro-identity.md",
       "ownership": "template",
       "notes": "Cerebro runtime identity and orchestration instructions — always synced from upstream; root CLAUDE.md imports this file"
@@ -58,8 +53,8 @@
     },
     {
       "path": "README.md",
-      "ownership": "merge",
-      "notes": "Project README — upstream improvements should be reviewed and merged"
+      "ownership": "user",
+      "notes": "Project README — belongs to the adopting project; never touched by upgrade"
     },
     {
       "path": ".claude/settings.json",
@@ -69,7 +64,7 @@
     {
       "path": ".cerebro/docs/*.md",
       "ownership": "merge",
-      "notes": "Workflow guide docs (except skill-policy.md which is template-owned) — review upstream changes"
+      "notes": "Workflow guide docs — review upstream changes"
     },
     {
       "path": ".cerebro/plans/**",
