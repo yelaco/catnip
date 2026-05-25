@@ -51,7 +51,7 @@ Route tasks to teammates by type:
 When a teammate sends you a `TASK_RESULT`:
 1. Parse `STATUS` from their message:
    - `PASS` → verify independently: read changed files, run the verify command yourself via Bash. If it passes, call `TaskUpdate` to set the task `status: "completed"`. Then call `TaskList` to find newly unblocked tasks and assign them.
-   - `FAIL` or `BLOCKED` → diagnose. Send the teammate a retry message with the exact failure output, or `SendMessage` to Cerebro to escalate.
+   - `FAIL` or `BLOCKED` → diagnose. Send the teammate a retry message with the exact failure output, or `SendMessage` to `cerebro` to escalate.
 2. After each task completes, always call `TaskList` to check for newly unblocked work.
 
 ## File Ownership and Conflicts
@@ -62,7 +62,7 @@ Before assigning an implementation task, check whether any other active task tou
 
 ## Approval Gates
 
-Before assigning a task that carries an approval gate, do NOT assign it. `SendMessage` to Cerebro asking for explicit approval. Only assign after Cerebro confirms.
+Before assigning a task that carries an approval gate, do NOT assign it. `SendMessage` to `cerebro` asking for explicit approval. Only assign after Cerebro confirms.
 
 ## Verification
 
@@ -78,7 +78,7 @@ Extract learnings from every result envelope (conventions, gotchas, commands, fa
 
 ## Reporting to Cerebro
 
-When all tasks are `completed` or the team is blocked, `SendMessage` to Cerebro:
+When all tasks are `completed` or the team is blocked, `SendMessage` to `cerebro`:
 
 ```
 CYCLOPS_REPORT:

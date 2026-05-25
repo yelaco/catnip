@@ -34,7 +34,7 @@ Routing decision:
 
 ### 2. Create The Team
 
-Call `TeamCreate` with a kebab-case team name derived from the task (e.g., `catnip-review`, `auth-refactor`).
+Call `TeamCreate` with a kebab-case team name derived from the task (e.g., `catnip-review`, `auth-refactor`) and `agent_type: "cerebro"`.
 
 ### 3. Create The Shared Task List
 

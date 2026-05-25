@@ -19,7 +19,7 @@ Ask one question at a time. If the task is already clear, proceed.
 
 ### 2. Create The Planning Team
 
-Call `TeamCreate` with a kebab-case team name for this planning run (e.g., `plan-auth-refactor`).
+Call `TeamCreate` with a kebab-case team name for this planning run (e.g., `plan-auth-refactor`) and `agent_type: "cerebro"`.
 
 ### 3. Create The Shared Task List
 
