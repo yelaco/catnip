@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Read-only architecture consultant for engineering tradeoffs, system design, scalability, security, performance, and maintainability.
-model: opus
+model: sonnet
 effort: high
 tools: Read, Grep, Glob, Bash, TaskList, TaskGet, TaskUpdate, SendMessage
 ---

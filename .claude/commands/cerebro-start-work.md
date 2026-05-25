@@ -36,14 +36,14 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message so they run in parallel:
 
-- `cyclops-field` using the **cyclops** agent type — coordinates from day one; include in the prompt: plan path, team name, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, etc.)
-- `wolverine-implementation` using the **wolverine** agent type — idles until Cyclops assigns an implementation task
-- `storm-ui` using the **storm** agent type — only include when the plan has UI tasks
-- `forge-architecture` using the **forge** agent type — answers architecture questions for teammates
-- `nightcrawler-recon` using the **nightcrawler** agent type — answers codebase navigation questions
-- `sage-research` using the **sage** agent type — answers documentation and API questions
-- `beast-review` using the **beast** agent type
-- `emma-validation` using the **emma-frost** agent type — only include when risk is HIGH
+- `cyclops-field` (`subagent_type: "cyclops"`) — coordinates from day one; include in the prompt: plan path, team name, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, etc.)
+- `wolverine-implementation` (`subagent_type: "wolverine"`) — idles until Cyclops assigns an implementation task
+- `storm-ui` (`subagent_type: "storm"`) — only include when the plan has UI tasks
+- `forge-architecture` (`subagent_type: "forge"`) — answers architecture questions for teammates
+- `nightcrawler-recon` (`subagent_type: "nightcrawler"`) — answers codebase navigation questions
+- `sage-research` (`subagent_type: "sage"`) — answers documentation and API questions
+- `beast-review` (`subagent_type: "beast"`)
+- `emma-validation` (`subagent_type: "emma-frost"`) — only include when risk is HIGH
 
 **Every spawn prompt must include a `## Team Roster` section** listing every active teammate by exact name. Example:
 

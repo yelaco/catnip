@@ -2,7 +2,7 @@
 name: cyclops
 description: Live field coordinator for Cerebro agent teams; owns the shared task list, assigns work to teammates via TaskUpdate and SendMessage, verifies results directly, and reports completion to Cerebro.
 model: sonnet
-effort: medium
+effort: high
 tools: Read, Grep, Glob, Bash, TaskList, TaskGet, TaskUpdate, SendMessage
 ---
 

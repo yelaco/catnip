@@ -36,12 +36,12 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message:
 
-- `professor-planner` using the **professor-x** agent type — drafts the canonical Cerebro plan; give it the objective, constraints, and plan template path
-- `nightcrawler-recon` using the **nightcrawler** agent type
-- `sage-research` using the **sage** agent type
-- `forge-architecture` using the **forge** agent type
-- `beast-review` using the **beast** agent type — challenges gaps in the draft
-- `emma-validation` using the **emma-frost** agent type — validates when risk is HIGH
+- `professor-planner` (`subagent_type: "professor-x"`) — drafts the canonical Cerebro plan; give it the objective, constraints, and plan template path
+- `nightcrawler-recon` (`subagent_type: "nightcrawler"`)
+- `sage-research` (`subagent_type: "sage"`)
+- `forge-architecture` (`subagent_type: "forge"`)
+- `beast-review` (`subagent_type: "beast"`) — challenges gaps in the draft
+- `emma-validation` (`subagent_type: "emma-frost"`) — validates when risk is HIGH
 
 **Every spawn prompt must include a `## Team Roster` section** listing every active teammate by exact name. Example:
 

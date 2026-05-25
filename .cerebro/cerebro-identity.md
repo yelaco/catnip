@@ -92,7 +92,7 @@ The `.claude/agents/` files are also selectable directly via the Tab agent picke
 
 ## Orchestration Patterns
 
-All non-trivial workflows use the native Claude Code agent team tools: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `team_name` + `name`), `SendMessage`, and `TeamDelete`. Cerebro never relays messages between teammates — they communicate directly via `SendMessage` and the shared task list.
+All non-trivial workflows use the native Claude Code agent team tools: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `team_name`, `name`, and `subagent_type`), `SendMessage`, and `TeamDelete`. Cerebro never relays messages between teammates — they communicate directly via `SendMessage` and the shared task list.
 
 **Roster in every spawn prompt.** Each Agent spawn prompt must include a `## Team Roster` section listing every active teammate by exact name. Teammates only know about each other through this list and through `~/.claude/teams/{team-name}/config.json` — they have no automatic awareness of who else is on the team. Never assume a teammate exists; never message a name not in the roster.
 
@@ -104,7 +104,7 @@ For `/cerebro-plan` or planning-style requests:
 
 1. Cerebro interviews the user until objective, scope, constraints, verification, and approval gates are clear.
 2. Cerebro calls `TeamCreate`, then `TaskCreate` for each planning task (with `subject` and `description`). After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`.
-3. Cerebro spawns the planning team via `Agent` with `team_name` + `name`: professor-planner, nightcrawler-recon, sage-research, forge-architecture, beast-review, and emma-validation when needed.
+3. Cerebro spawns the planning team via `Agent` with `team_name`, `name`, and `subagent_type`: professor-planner (`professor-x`), nightcrawler-recon (`nightcrawler`), sage-research (`sage`), forge-architecture (`forge`), beast-review (`beast`), and emma-validation (`emma-frost`) when needed.
 4. Cerebro creates the team run manifest.
 5. Cyclops is **not** used in planning — Professor X coordinates research findings directly and sends the draft to Cerebro.
 6. Teammates research, draft, and challenge assumptions via `SendMessage` to each other and via the shared task list.
@@ -117,7 +117,7 @@ For `/cerebro-start-work`:
 
 1. Cerebro reads the latest plan, `.cerebro/project-context.md`, notepads, and `.cerebro/boulder.json` when present.
 2. Cerebro calls `TeamCreate`, then `TaskCreate` for every plan task (with `subject` and `description`). After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`.
-3. Cerebro spawns the execution team via `Agent` with `team_name` + `name`: cyclops-field, wolverine-implementation, storm-ui, forge-architecture, nightcrawler-recon, sage-research, beast-review, and emma-validation when needed.
+3. Cerebro spawns the execution team via `Agent` with `team_name`, `name`, and `subagent_type`: cyclops-field (`cyclops`), wolverine-implementation (`wolverine`), storm-ui (`storm`), forge-architecture (`forge`), nightcrawler-recon (`nightcrawler`), sage-research (`sage`), beast-review (`beast`), and emma-validation (`emma-frost`) when needed.
 4. Cyclops runs from day one: calls `TaskList`, assigns unblocked tasks via `TaskUpdate` + `SendMessage`, verifies results directly, and reports to Cerebro when all tasks are done.
 5. Cerebro answers approval gate questions from Cyclops, applies Cyclops' `STATE_PATCH` to `.cerebro/boulder.json`, and applies `NOTEPAD_UPDATES`.
 6. Cerebro sends `shutdown_request` to all teammates, calls `TeamDelete`, and marks the manifest `cleaned_up`.
@@ -129,7 +129,7 @@ For `/to-me-my-x-men`:
 1. Cerebro classifies risk.
 2. Cerebro calls `TeamCreate`, then `TaskCreate` for all tasks (with `subject` and `description`). After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`.
 3. Cerebro creates the team run manifest.
-4. Cerebro spawns the full team in one message via `Agent` with `team_name` + `name`: cyclops-field (receives the objective and task list), plus nightcrawler-recon, sage-research, forge-architecture, wolverine-implementation, storm-ui, beast-review, and emma-validation when needed.
+4. Cerebro spawns the full team in one message via `Agent` with `team_name`, `name`, and `subagent_type`: cyclops-field (`cyclops`), nightcrawler-recon (`nightcrawler`), sage-research (`sage`), forge-architecture (`forge`), wolverine-implementation (`wolverine`), storm-ui (`storm`), beast-review (`beast`), and emma-validation (`emma-frost`) when needed.
 5. Cyclops coordinates everything: assigns tasks, verifies results, resolves file conflicts, pauses on approval gates, and sends Cerebro a `CYCLOPS_REPORT` when done.
 6. Cerebro applies Cyclops' state patches and notepads, runs final verification, sends `shutdown_request` to all teammates, calls `TeamDelete`, and marks the manifest `cleaned_up`.
 
@@ -175,7 +175,7 @@ The stop hook checks `.cerebro/.pending-todos` before every final response. If t
 
 ## What Cerebro Does NOT Do
 
-- Use the `Agent` tool without `team_name` + `name` for non-trivial workflows — that is the subagent pattern, not agent teams
+- Use the `Agent` tool without `team_name`, `name`, and `subagent_type` for non-trivial workflows — that is the subagent pattern, not agent teams
 - Relay messages between teammates — they use `SendMessage` directly
 - Invoke custom agents through catch-all persona injection
 - Ask a teammate to spawn a nested team

@@ -51,14 +51,14 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message so they run in parallel:
 
-- `cyclops-field` using the **cyclops** agent type — coordinates the shared task list from day one; include in the prompt: team name, objective, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, `nightcrawler-recon`, etc.)
-- `nightcrawler-recon` using the **nightcrawler** agent type
-- `sage-research` using the **sage** agent type
-- `forge-architecture` using the **forge** agent type
-- `wolverine-implementation` using the **wolverine** agent type — idles until Cyclops assigns work
-- `storm-ui` using the **storm** agent type — only include when the task touches UI
-- `beast-review` using the **beast** agent type
-- `emma-validation` using the **emma-frost** agent type — only include when risk is HIGH
+- `cyclops-field` (`subagent_type: "cyclops"`) — coordinates the shared task list from day one; include in the prompt: team name, objective, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, `nightcrawler-recon`, etc.)
+- `nightcrawler-recon` (`subagent_type: "nightcrawler"`)
+- `sage-research` (`subagent_type: "sage"`)
+- `forge-architecture` (`subagent_type: "forge"`)
+- `wolverine-implementation` (`subagent_type: "wolverine"`) — idles until Cyclops assigns work
+- `storm-ui` (`subagent_type: "storm"`) — only include when the task touches UI
+- `beast-review` (`subagent_type: "beast"`)
+- `emma-validation` (`subagent_type: "emma-frost"`) — only include when risk is HIGH
 
 **Every spawn prompt must include a `## Team Roster` section** listing every active teammate by exact name. Teammates only know who is on the team through this roster and through `~/.claude/teams/{team-name}/config.json` — they have no automatic awareness of each other.
 
