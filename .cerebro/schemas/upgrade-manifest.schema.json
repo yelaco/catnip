@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cerebro Upgrade Manifest",
+  "description": "Declares file ownership for /cerebro-upgrade. Controls which files are overwritten, merged, or left untouched during a template sync.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "entries"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "entries": {
+      "type": "array",
+      "description": "Ordered list of ownership declarations. Earlier entries take precedence for overlapping globs.",
+      "items": {
+        "$ref": "#/$defs/entry"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "ownership"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Glob pattern or exact path relative to the project root",
+          "minLength": 1
+        },
+        "ownership": {
+          "type": "string",
+          "description": "template: overwrite silently (Gate C fires in --strict mode); merge: show unified diff, Gate A on conflict; user: never touched",
+          "enum": ["template", "merge", "user"]
+        },
+        "notes": {
+          "type": "string",
+          "description": "Human-readable rationale for this ownership classification"
+        }
+      }
+    }
+  }
+}

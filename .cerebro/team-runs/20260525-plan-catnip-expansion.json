@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "run_id": "20260525-plan-catnip-expansion",
+  "command": "/cerebro-plan",
+  "status": "planning",
+  "lead": "cerebro",
+  "team_name": "plan-catnip-expansion",
+  "objective": "Plan the Catnip game expansion: coin + milestone economy, store screen, power-up balls (explosive, multi-ball, magnet), cat abilities (dash, shield, clone), obstacles/bumpers, and four cosmetic systems (cat skin, ball skin, arena theme, artifact passive). File structure splits from single index.html into ES modules.",
+  "risk_level": "MEDIUM",
+  "started_at": "2026-05-25T00:00:00Z",
+  "updated_at": "2026-05-25T00:00:00Z",
+  "teammates": [
+    {
+      "name": "nightcrawler-recon",
+      "agent_type": "nightcrawler",
+      "status": "spawned",
+      "responsibility": "Map index.html structure; identify modularization seams and tight coupling. Task #1.",
+      "last_signal": ""
+    },
+    {
+      "name": "sage-research",
+      "agent_type": "sage",
+      "status": "spawned",
+      "responsibility": "Research localStorage economy patterns, Canvas skin rendering without assets, Web Audio for new SFX. Task #2.",
+      "last_signal": ""
+    },
+    {
+      "name": "forge-architecture",
+      "agent_type": "forge",
+      "status": "spawned",
+      "responsibility": "Design multi-file architecture, data schemas (coin economy, store catalog, skins, artifacts), new GameState additions, power-up/ability/bumper systems. Task #3.",
+      "last_signal": ""
+    },
+    {
+      "name": "professor-planner",
+      "agent_type": "professor-x",
+      "status": "spawned",
+      "responsibility": "Receive recon+research+architecture findings; draft canonical plan to .cerebro/notepads/catnip-expansion/plan-draft.md; revise after Beast gap review. Tasks #4.",
+      "last_signal": ""
+    },
+    {
+      "name": "beast-review",
+      "agent_type": "beast",
+      "status": "spawned",
+      "responsibility": "Gap-check the plan draft for missing acceptance criteria, edge cases, scope ambiguity, over-engineering. Task #5.",
+      "last_signal": ""
+    }
+  ],
+  "ownership": [
+    {
+      "path": ".cerebro/notepads/catnip-expansion/plan-draft.md",
+      "owner": "professor-planner",
+      "reviewer": "beast-review",
+      "notes": "Professor X writes; Beast reviews; Cerebro writes final to .cerebro/plans/"
+    }
+  ],
+  "mailbox_decisions": [],
+  "approvals": [
+    {
+      "gate": "File split architecture approval — Cerebro approves the proposed multi-file structure before implementation begins",
+      "status": "pending",
+      "decided_at": null,
+      "notes": "Must be decided before any execution tasks begin"
+    }
+  ],
+  "verification": [],
+  "cleanup": {
+    "team_stopped": true,
+    "pending_todos_clear": true,
+    "notes": "All 5 teammates acknowledged shutdown. TeamDelete called. Plan written to .cerebro/plans/catnip-expansion.md."
+  }
+}

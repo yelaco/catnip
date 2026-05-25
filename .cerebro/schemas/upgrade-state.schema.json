@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cerebro Upgrade State",
+  "description": "Baseline record written after each successful /cerebro-upgrade run. Drives accurate change detection on the next upgrade.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "applied_ref", "applied_sha", "applied_at", "hashes"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "applied_ref": {
+      "type": "string",
+      "description": "The git tag or commit SHA that was passed to /cerebro-upgrade",
+      "minLength": 1
+    },
+    "applied_sha": {
+      "type": "string",
+      "description": "Full 40-character SHA of the upstream commit that was applied",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "applied_at": {
+      "type": "string",
+      "description": "ISO-8601 timestamp when the upgrade was applied",
+      "minLength": 1
+    },
+    "hashes": {
+      "type": "object",
+      "description": "Map of relative file path to SHA-256 hex digest of committed content at time of upgrade. Covers all template-owned and merge-owned files present in the local tree after the upgrade.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "SHA-256 hex digest (64 lowercase hex characters)",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "run_id": "20260522-180000-catnip-review-v3",
+  "command": "/to-me-my-x-men",
+  "status": "active",
+  "lead": "cerebro",
+  "team_name": "catnip-codebase-review",
+  "objective": "Full codebase review of the catnip project: map structure, assess architecture, identify risks, review code quality.",
+  "risk_level": "LOW",
+  "started_at": "2026-05-22T18:00:00Z",
+  "updated_at": "2026-05-22T18:00:00Z",
+  "teammates": [
+    {
+      "name": "cyclops-field",
+      "agent_type": "cyclops",
+      "status": "active",
+      "responsibility": "Coordinate shared task list from day one: assign tasks, verify results, report to Cerebro.",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "nightcrawler-recon",
+      "agent_type": "nightcrawler",
+      "status": "active",
+      "responsibility": "Task 1 — map codebase structure, game logic, code quality, and risk areas.",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "sage-research",
+      "agent_type": "sage",
+      "status": "active",
+      "responsibility": "Task 2 — Canvas API best practices and Cerebro framework health.",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "forge-architecture",
+      "agent_type": "forge",
+      "status": "active",
+      "responsibility": "Task 3 — architecture tradeoffs, performance risks, scalability.",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "beast-review",
+      "agent_type": "beast",
+      "status": "active",
+      "responsibility": "Task 4 — gap-review all findings (blocked by tasks 1-3).",
+      "last_signal": "spawned"
+    }
+  ],
+  "ownership": [
+    {
+      "path": "index.html",
+      "owner": "nightcrawler-recon",
+      "reviewer": "forge-architecture",
+      "notes": "read-only"
+    },
+    {
+      "path": ".cerebro/",
+      "owner": "sage-research",
+      "reviewer": "beast-review",
+      "notes": "read-only"
+    },
+    {
+      "path": ".claude/",
+      "owner": "sage-research",
+      "reviewer": "beast-review",
+      "notes": "read-only"
+    }
+  ],
+  "tasks": [
+    { "id": "task-1", "owner": "nightcrawler-recon", "status": "active", "depends_on": [], "summary": "Map codebase structure and code quality", "verify": ["findings returned via SendMessage"] },
+    { "id": "task-2", "owner": "sage-research", "status": "active", "depends_on": [], "summary": "Research Canvas API patterns and framework health", "verify": ["findings returned via SendMessage"] },
+    { "id": "task-3", "owner": "forge-architecture", "status": "active", "depends_on": [], "summary": "Assess architecture and performance risks", "verify": ["findings returned via SendMessage"] },
+    { "id": "task-4", "owner": "beast-review", "status": "pending", "depends_on": ["task-1", "task-2", "task-3"], "summary": "Gap-review all findings", "verify": ["verdict returned via SendMessage"] }
+  ],
+  "mailbox_decisions": [],
+  "approvals": [],
+  "verification": [
+    { "command": "python3 -m json.tool .claude/settings.json", "status": "NOT RUN", "by": "cerebro", "notes": "" },
+    { "command": "python3 -m json.tool .cerebro/boulder.json", "status": "NOT RUN", "by": "cerebro", "notes": "" }
+  ],
+  "cleanup": {
+    "team_stopped": false,
+    "pending_todos_clear": false,
+    "notes": ""
+  }
+}

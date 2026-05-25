@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "path": ".claude/agents/*.md",
+      "ownership": "template",
+      "notes": "Native agent role definitions — always synced from upstream"
+    },
+    {
+      "path": ".claude/commands/cerebro-*.md",
+      "ownership": "template",
+      "notes": "Cerebro slash commands (including cerebro-setup.md) — always synced from upstream"
+    },
+    {
+      "path": ".claude/commands/to-me-my-x-men.md",
+      "ownership": "template",
+      "notes": "Primary autonomous execution command — always synced from upstream"
+    },
+    {
+      "path": ".claude/hooks/*.sh",
+      "ownership": "template",
+      "notes": "Enforcement hooks — always synced; chmod +x manually if executable bit is lost"
+    },
+    {
+      "path": ".cerebro/schemas/*.json",
+      "ownership": "template",
+      "notes": "JSON schemas for state files — always synced from upstream"
+    },
+    {
+      "path": ".cerebro/templates/*.md",
+      "ownership": "template",
+      "notes": "Plan and context templates — always synced from upstream"
+    },
+    {
+      "path": ".cerebro/templates/*.json",
+      "ownership": "template",
+      "notes": "Team run manifest template — always synced from upstream"
+    },
+    {
+      "path": ".cerebro/docs/skill-policy.md",
+      "ownership": "template",
+      "notes": "Canonical skill policy doc — always synced from upstream"
+    },
+    {
+      "path": ".cerebro/cerebro-identity.md",
+      "ownership": "template",
+      "notes": "Cerebro runtime identity and orchestration instructions — always synced from upstream; root CLAUDE.md imports this file"
+    },
+    {
+      "path": ".cerebro/.gitignore",
+      "ownership": "template",
+      "notes": "Cerebro runtime ignore rules — always synced from upstream; kept separate so template users' root .gitignore is never modified"
+    },
+    {
+      "path": "CLAUDE.md",
+      "ownership": "user",
+      "notes": "Project-specific instructions; imports .cerebro/cerebro-identity.md — never touched by upgrade"
+    },
+    {
+      "path": "README.md",
+      "ownership": "merge",
+      "notes": "Project README — upstream improvements should be reviewed and merged"
+    },
+    {
+      "path": ".claude/settings.json",
+      "ownership": "merge",
+      "notes": "Hook wiring and permissions — project-specific additions may coexist with upstream changes"
+    },
+    {
+      "path": ".cerebro/docs/*.md",
+      "ownership": "merge",
+      "notes": "Workflow guide docs (except skill-policy.md which is template-owned) — review upstream changes"
+    },
+    {
+      "path": ".cerebro/plans/**",
+      "ownership": "user",
+      "notes": "Project-specific plans written by Professor X — never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/notepads/**",
+      "ownership": "user",
+      "notes": "Per-plan wisdom files — never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/boulder.json",
+      "ownership": "user",
+      "notes": "Active execution state — never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/.pending-todos",
+      "ownership": "user",
+      "notes": "Active worker todos — never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/team-runs/**",
+      "ownership": "user",
+      "notes": "Team run coordination audit logs — never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/project-context.md",
+      "ownership": "user",
+      "notes": "Repository index created by /cerebro-index — project-specific, never touched by upgrade"
+    }
+  ]
+}

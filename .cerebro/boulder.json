@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "active_plan": ".cerebro/plans/catnip-expansion.md",
+  "plan_name": "Catnip Expansion: Coins, Store, Power-ups, Abilities, and Bumpers",
+  "status": "completed",
+  "risk_level": "HIGH",
+  "team_name": "exec-catnip-expansion",
+  "started_at": "2026-05-25T04:10:00Z",
+  "updated_at": "2026-05-25T12:55:00Z",
+  "completed_at": "2026-05-25T12:55:00Z",
+  "approval_gates": [
+    {
+      "name": "Pre-Phase-1 checkpoint",
+      "description": "index.html.v1-backup must exist before any file split begins",
+      "status": "approved",
+      "approved_at": "2026-05-25T11:11:00Z",
+      "notes": "index.html.v1-backup created (46 KB, 1418 lines). Not a git repo — no tag created."
+    },
+    {
+      "name": "File-split structure approval",
+      "description": "Wolverine delivers module-boundary.md; Cerebro approves file list, exports, and load-order DAG before js/*.js files are created",
+      "status": "approved",
+      "approved_at": "2026-05-25T11:45:00Z",
+      "notes": "12-file layout approved. Load order: constants → state → catalog → entities → physics → powerups → abilities → render → store → audio → input → game. pendingAudio decoupling approved. Storm owns render.js draw functions. Three artifact helpers approved: getEffectiveStartingBalls, getEffectiveCatSpeedCap, getCoinBonus."
+    },
+    {
+      "name": "Store UI mockup approval",
+      "description": "Storm delivers store-mockup.md; Cerebro approves layout before draw code begins",
+      "status": "approved",
+      "approved_at": "2026-05-25T11:30:00Z",
+      "notes": "Approved by Cerebro. Tasks #25, #26, #27 unblocked."
+    }
+  ],
+  "verification_history": [],
+  "decisions": [
+    {
+      "date": "2026-05-25",
+      "gate": "File-split structure approval",
+      "decision": "APPROVED",
+      "details": [
+        "12-file layout approved (powerups.js separate from physics.js)",
+        "Load order: constants → state → catalog → entities → physics → powerups → abilities → render → store → audio → input → game",
+        "pendingAudio[] queue decoupling approved (physics queues events, audio.js drains per frame)",
+        "Storm owns all draw functions in render.js — Wolverine must not modify draw functions",
+        "Three artifact helper accessors approved: getEffectiveStartingBalls, getEffectiveCatSpeedCap, getCoinBonus"
+      ]
+    },
+    {
+      "date": "2026-05-25",
+      "gate": "Store UI mockup approval",
+      "decision": "APPROVED",
+      "details": [
+        "Artifact icons: distinct canvas-drawn glyphs (paw, iron-claw fist, hourglass)",
+        "Arena preview: color swatch + wall-color strip only (no full background render)",
+        "Card row layout for 4 items: 2+2 symmetric grid",
+        "Footer coin deduction preview: keep as proposed"
+      ]
+    },
+    {
+      "date": "2026-05-25",
+      "subject": "artifact-slow-mo + dash interaction",
+      "decision": "Option B — exempt dash window from speed cap",
+      "details": [
+        "During active dash ability window (0.5s), artifact-slow-mo speed cap is bypassed",
+        "Cap re-applies the frame after dash expires",
+        "Shield and teleport remain subject to the cap as normal",
+        "Rationale: slow-mo is a passive runaway-prevention cap, not an ability suppressor. Dash with no effect reads as a bug, not a trade-off. 0.5s window is too short to undermine slow-mo purpose.",
+        "Implementation: in getEffectiveCatSpeedCap(state), return Infinity (or CAT_MAX_SPEED) when state.run.cat.activeAbility === 'dash'"
+      ]
+    }
+  ]
+}

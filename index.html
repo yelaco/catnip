@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catnip</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0d0f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: #e8e8e8;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #a0a0b0;
+      margin-bottom: 12px;
+      font-weight: 400;
+    }
+
+    canvas {
+      display: block;
+      border-radius: 6px;
+      cursor: crosshair;
+      /* CSS dimensions; actual backing store is scaled by dpr in game.js */
+      width: 1000px;
+      height: 700px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Catnip — don't miss.</h1>
+  <canvas id="game"></canvas>
+
+  <!-- LOAD ORDER: see .cerebro/notepads/catnip-expansion/module-boundary.md -->
+  <script src="js/constants.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/powerups.js"></script>
+  <script src="js/abilities.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/game.js"></script>
+  <script>window.Catnip.start();</script>
+</body>
+</html>
