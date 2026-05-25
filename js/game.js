@@ -89,6 +89,8 @@
         window.Catnip.abilities.updateAbilities(state, dt);
       }
 
+      if (window.Catnip.physics.updateClones) window.Catnip.physics.updateClones(state, dt);
+
       if (window.Catnip.powerups) {
         window.Catnip.powerups.updateExplosionZones(state, dt);
       }
@@ -133,6 +135,7 @@
     if (window.Catnip.render.drawBumpers) {
       window.Catnip.render.drawBumpers(ctx, state, palette);
     }
+    window.Catnip.render.drawClones(ctx, state, palette);
     if (window.Catnip.render.drawExplosionZones) {
       window.Catnip.render.drawExplosionZones(ctx, state);
     }

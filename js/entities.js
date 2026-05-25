@@ -24,7 +24,8 @@
       speedTier: 0,
       activeAbility: null,
       abilityTimer: 0,
-      abilityCooldowns: { shield: 0, dash: 0, teleport: 0 },
+      abilityCooldowns: { shield: 0, clone: 0 },
+      pendingAbility: null,
     };
   }
 

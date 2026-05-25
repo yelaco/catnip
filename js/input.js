@@ -354,7 +354,7 @@
     const gap = 78;
     const labels = ['Play Game', 'Store', 'Settings', 'Guide'];
     const totalH = (labels.length - 1) * gap + btnH;
-    const startY = C.H / 2 - totalH / 2 - 20;
+    const startY = C.H / 2 - totalH / 2 + 40;
     state.ui.menuButtons = labels.map(function (label, i) {
       return {
         label: label,

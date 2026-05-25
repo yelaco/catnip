@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "run_id": "20260525-153000-catnip-fixes",
+  "command": "/to-me-my-x-men",
+  "status": "complete",
+  "lead": "cerebro",
+  "team_name": "catnip-fixes",
+  "objective": "Fix UI overlaps (mute btn/coin panel), replace dash ability with clone ability, enlarge map to 1280x800",
+  "risk_level": "MEDIUM",
+  "started_at": "2026-05-25T15:30:00Z",
+  "updated_at": "2026-05-25T15:30:00Z",
+  "teammates": [
+    {
+      "name": "cyclops-field",
+      "agent_type": "cyclops",
+      "status": "active",
+      "responsibility": "Coordinates shared task list, assigns work, verifies results, reports to Cerebro",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "nightcrawler-recon",
+      "agent_type": "nightcrawler",
+      "status": "active",
+      "responsibility": "Task #1: read game.js, input.js, entities.js and report findings",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "wolverine-implementation",
+      "agent_type": "wolverine",
+      "status": "active",
+      "responsibility": "Tasks #3, #5: replace dash→clone logic in abilities/physics/constants/state/game; map resize",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "storm-ui",
+      "agent_type": "storm",
+      "status": "active",
+      "responsibility": "Tasks #2, #4: fix UI overlap in render.js; add clone rendering; wire drawClones into game.js",
+      "last_signal": "spawned"
+    },
+    {
+      "name": "beast-review",
+      "agent_type": "beast",
+      "status": "active",
+      "responsibility": "Task #6: validate all changes for correctness, stale references, edge cases",
+      "last_signal": "spawned"
+    }
+  ],
+  "ownership": [
+    { "path": "js/render.js", "owner": "storm-ui", "reviewer": "beast-review", "notes": "UI overlap fix + clone rendering" },
+    { "path": "js/game.js", "owner": "storm-ui", "reviewer": "beast-review", "notes": "Wire updateClones + drawClones" },
+    { "path": "js/constants.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Rename dash→clone constants + map resize" },
+    { "path": "js/state.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Add clones[] to run, rename cooldown key" },
+    { "path": "js/abilities.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Replace dash activation with clone spawn" },
+    { "path": "js/physics.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Clone-ball collision + updateClones export" },
+    { "path": "index.html", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Canvas CSS resize" }
+  ],
+  "mailbox_decisions": [],
+  "approvals": [],
+  "verification": [
+    {
+      "command": "open /Users/quang.bui/workspace/projects/catnip/index.html",
+      "status": "NOT RUN",
+      "by": "cerebro",
+      "notes": "Open in browser and verify: 1) coin text doesn't overlap mute button, 2) cat spawns clones at speed tier ~2.5x, 3) ball hitting clone removes both, 4) map is visibly larger"
+    }
+  ],
+  "cleanup": {
+    "team_stopped": true,
+    "pending_todos_clear": true,
+    "notes": "Stop-hook loop occurred mid-run when Tasks #3 and #4 were partially complete — Cerebro intervened directly. entities.js stale dash ref caught by Cyclops independent verification and patched before Beast review. Beast: OKAY with 3 non-blocking notes."
+  }
+}

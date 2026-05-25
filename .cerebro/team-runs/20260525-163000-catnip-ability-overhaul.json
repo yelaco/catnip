@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "run_id": "20260525-163000-catnip-ability-overhaul",
+  "command": "/to-me-my-x-men",
+  "status": "complete",
+  "lead": "cerebro",
+  "team_name": "catnip-ability-overhaul",
+  "objective": "Remove teleport ability; redesign clone (moving, recursive spawning, real-cat-hit clears all); add ball-ball collision",
+  "risk_level": "MEDIUM",
+  "started_at": "2026-05-25T16:30:00Z",
+  "updated_at": "2026-05-25T17:45:00Z",
+  "teammates": [
+    {
+      "name": "cyclops-field",
+      "agent_type": "cyclops",
+      "status": "shutdown",
+      "responsibility": "Coordinate task list, assign work, verify results, report to Cerebro",
+      "last_signal": "shutdown_sent"
+    },
+    {
+      "name": "nightcrawler-recon",
+      "agent_type": "nightcrawler",
+      "status": "shutdown",
+      "responsibility": "Task #1: read all relevant files and report teleport/clone/ball-physics code locations",
+      "last_signal": "shutdown_sent"
+    },
+    {
+      "name": "wolverine-implementation",
+      "agent_type": "wolverine",
+      "status": "shutdown",
+      "responsibility": "Tasks #2, #3: remove teleport; redesign clone system; add ball-ball collision",
+      "last_signal": "shutdown_sent"
+    },
+    {
+      "name": "storm-ui",
+      "agent_type": "storm",
+      "status": "shutdown",
+      "responsibility": "Task #4: update render.js (remove teleport visual, update clone rendering), verify game.js wiring",
+      "last_signal": "shutdown_sent"
+    },
+    {
+      "name": "beast-review",
+      "agent_type": "beast",
+      "status": "shutdown",
+      "responsibility": "Task #5: gap analysis on all changes — grep for stale refs, edge cases, missing exports",
+      "last_signal": "shutdown_sent"
+    }
+  ],
+  "ownership": [
+    { "path": "js/constants.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Add CLONE_SPEED, CLONE_SPAWN_INTERVAL, CLONE_MAX_COUNT; ABILITY_DURATION_CLONE extended to 15.0s" },
+    { "path": "js/state.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Remove teleport from abilityCooldowns" },
+    { "path": "js/entities.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Confirmed pendingAbility: null present; abilityCooldowns: { shield, clone } only" },
+    { "path": "js/abilities.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Removed teleport activation + _repositionCatRandom; clone spawn gets vx/vy/spawnTimer" },
+    { "path": "js/physics.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "updateClones: move+bounce+recursive spawn; cat-hit clears clones; ball-ball collision added" },
+    { "path": "js/render.js", "owner": "storm-ui", "reviewer": "beast-review", "notes": "Removed teleport visual overlay; drawClones fade holds 0.65 until 80% of lifetime" },
+    { "path": "js/game.js", "owner": "storm-ui", "reviewer": "beast-review", "notes": "Wiring confirmed: updateClones on line ~92, drawClones on line ~138" },
+    { "path": "js/audio.js", "owner": "wolverine-implementation", "reviewer": "beast-review", "notes": "Comment updated: toneIndex 2 now unused (was teleport)" }
+  ],
+  "mailbox_decisions": [
+    {
+      "timestamp": "2026-05-25T17:20:00Z",
+      "decision": "CLONE timing conflict resolved: ABILITY_DURATION_CLONE=15.0s + CLONE_SPAWN_INTERVAL=6.0s. Beast wanted 2.0s interval for 3.0s clones; Cerebro extended lifetime to 15.0s instead. Final: 2 spawn events per clone life (at t=6s, t=12s), capped at CLONE_MAX_COUNT=5.",
+      "by": "cerebro"
+    }
+  ],
+  "approvals": [
+    {
+      "gate": "Clone timing design",
+      "decision": "Option B — 15.0s lifetime + 6.0s interval",
+      "by": "cerebro",
+      "rationale": "Balanced threat escalation: 'after a while' = 6s feels correct; 5 max cap prevents runaway spawning"
+    }
+  ],
+  "verification": [
+    {
+      "command": "Beast gap analysis (12 checks)",
+      "status": "PASS",
+      "by": "beast-review",
+      "notes": "All 12 checks PASS after REJECT items resolved"
+    },
+    {
+      "command": "open /Users/quang.bui/workspace/projects/catnip/index.html",
+      "status": "PENDING",
+      "by": "cerebro",
+      "notes": "Manual browser verification: 1) No teleport, 2) Clones move+bounce, 3) Clone spawns clone after 6s, 4) Real-cat-hit clears all clones, 5) Ball-ball collision removes both balls"
+    }
+  ],
+  "cleanup": {
+    "team_stopped": true,
+    "pending_todos_clear": true,
+    "notes": "TeamDelete called successfully. Shutdown requests sent to all 5 teammates."
+  }
+}

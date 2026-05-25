@@ -220,6 +220,41 @@
     }
   }
 
+  function drawClones(ctx, state, palette) {
+    const clones = (state.run && state.run.clones) ? state.run.clones : [];
+    if (!clones.length) return;
+    for (const clone of clones) {
+      const lifeFrac = clone.lifetime > 0 ? clone.age / clone.lifetime : 0;
+      const alpha = lifeFrac > 0.8 ? 0.65 * (1 - (lifeFrac - 0.8) / 0.2) : 0.65;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = 'rgba(167,139,250,0.7)';
+      ctx.strokeStyle = 'rgba(167,139,250,0.85)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      ctx.arc(clone.x, clone.y, clone.r + 6, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+      const ghostState = { run: { catHitFlash: 0 } };
+      const ghostPalette = {
+        cat: {
+          bodyColor: '#9d7fd4',
+          outlineColor: '#6b4fa0',
+          earInnerColor: '#c8a0f0',
+          eyeColor: '#1a1a2e',
+          accessory: null,
+        }
+      };
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.6;
+      drawCat(ctx, { x: clone.x, y: clone.y, r: clone.r, activeAbility: null, vx: 0, vy: 0 }, ghostState, ghostPalette);
+      ctx.restore();
+    }
+  }
+
   function drawExplosionZones(ctx, state) {
     if (!state.run || !state.run.explosionZones) return;
     for (const zone of state.run.explosionZones) {
@@ -724,39 +759,18 @@
       ctx.arc(x, y, r + 9, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
-    } else if (abilityActive === 'dash') {
-      var dashSpd = Math.hypot(cat.vx, cat.vy);
-      if (dashSpd > 0) {
-        var dashNx = cat.vx / dashSpd;
-        var dashNy = cat.vy / dashSpd;
-        ctx.save();
-        for (var di = 1; di <= 4; di++) {
-          ctx.globalAlpha = 0.35 / di;
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = '#fb923c';
-          ctx.strokeStyle = '#fb923c';
-          ctx.lineWidth = Math.max(0.5, 2.5 - di * 0.5);
-          ctx.beginPath();
-          ctx.arc(x - dashNx * di * 10, y - dashNy * di * 10, r * Math.max(0.3, 1 - di * 0.15), 0, Math.PI * 2);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-    } else if (abilityActive === 'teleport_fade' || abilityActive === 'teleport_appear') {
-      var telePulse = 0.5 + 0.5 * Math.abs(Math.sin(Date.now() * 0.012));
+    } else if (abilityActive === 'clone') {
+      var clonePulse = 0.5 + 0.35 * Math.sin(Date.now() * 0.008);
       ctx.save();
-      ctx.shadowBlur = 28;
-      ctx.shadowColor = 'rgba(167,139,250,0.9)';
-      ctx.strokeStyle = 'rgba(167,139,250,' + telePulse + ')';
-      ctx.lineWidth = 2.5;
+      ctx.shadowBlur = 16;
+      ctx.shadowColor = 'rgba(167,139,250,0.8)';
+      ctx.strokeStyle = 'rgba(167,139,250,' + clonePulse + ')';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
       ctx.beginPath();
-      ctx.arc(x, y, r + 8, 0, Math.PI * 2);
+      ctx.arc(x, y, r + 7, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.globalAlpha = telePulse * 0.4;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(x, y, r + 18, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.setLineDash([]);
       ctx.restore();
     }
 
@@ -852,7 +866,7 @@
     ctx.shadowBlur = 4;
     ctx.shadowColor = '#ffd700';
     ctx.fillStyle = '#ffd700';
-    ctx.fillText(`Coins: ${coins}`, C.W - 16, 16);
+    ctx.fillText(`Coins: ${coins}`, C.W - 56, 16);
     ctx.shadowBlur = 0;
 
     // Power-up queue icons — top-center, 5 small circles
@@ -1022,12 +1036,12 @@
     ctx.shadowColor = `hsl(${(now * 0.05) % 360}, 90%, 65%)`;
     ctx.fillStyle = '#ffd700';
     ctx.textBaseline = 'middle';
-    ctx.fillText('CATNIP', W / 2, H / 2 - 175);
+    ctx.fillText('CATNIP', W / 2, H * 0.17);
 
     ctx.shadowBlur = 0;
     ctx.font = '16px "Segoe UI", system-ui, sans-serif';
     ctx.fillStyle = '#a0a0b0';
-    ctx.fillText("don't miss.", W / 2, H / 2 - 130);
+    ctx.fillText("don't miss.", W / 2, H * 0.24);
 
     ctx.restore();
 
@@ -1232,7 +1246,7 @@
     ctx.shadowBlur = 5;
     ctx.shadowColor = '#ffd700';
     ctx.fillStyle = '#ffd700';
-    ctx.fillText(`Coins: ${coins}`, W - 16, 26);
+    ctx.fillText(`Coins: ${coins}`, W - 56, 26);
     ctx.restore();
 
     // ── Tab strip (y 52–102) ─────────────────────────────────────────────────
@@ -1647,6 +1661,7 @@
     drawBackground,
     drawWalls,
     drawBumpers,
+    drawClones,
     drawExplosionZones,
     drawThrower,
     drawAimGuide,

@@ -234,6 +234,81 @@
     for (let i = toRemove.length - 1; i >= 0; i--) {
       run.activeBalls.splice(toRemove[i], 1);
     }
+
+    // Real cat hit clears all clones
+    if (run.catHitThisFrame) {
+      state.run.clones = [];
+    }
+
+    // Clone-ball collision — removes clone and ball, no score, no coins
+    const clones = run.clones;
+    if (clones && clones.length > 0) {
+      const cloneToRemove = [];
+      const ballToRemove = [];
+      for (let ci = 0; ci < clones.length; ci++) {
+        const clone = clones[ci];
+        for (let bi = 0; bi < run.activeBalls.length; bi++) {
+          const b = run.activeBalls[bi];
+          const dx2 = b.x - clone.x;
+          const dy2 = b.y - clone.y;
+          const radSum2 = clone.r + C.BALL_RADIUS;
+          if (dx2 * dx2 + dy2 * dy2 <= radSum2 * radSum2) {
+            if (cloneToRemove.indexOf(ci) === -1) cloneToRemove.push(ci);
+            if (ballToRemove.indexOf(bi) === -1) ballToRemove.push(bi);
+          }
+        }
+      }
+      for (let ci2 = cloneToRemove.length - 1; ci2 >= 0; ci2--) clones.splice(cloneToRemove[ci2], 1);
+      for (let bi2 = ballToRemove.length - 1; bi2 >= 0; bi2--) run.activeBalls.splice(ballToRemove[bi2], 1);
+    }
+
+    // Ball-ball collision — both balls disappear, no score, no coins
+    const balls = run.activeBalls;
+    const bbRemove = [];
+    for (let i = 0; i < balls.length; i++) {
+      for (let j = i + 1; j < balls.length; j++) {
+        const bdx = balls[i].x - balls[j].x;
+        const bdy = balls[i].y - balls[j].y;
+        if (bdx * bdx + bdy * bdy <= (C.BALL_RADIUS * 2) * (C.BALL_RADIUS * 2)) {
+          if (bbRemove.indexOf(i) === -1) bbRemove.push(i);
+          if (bbRemove.indexOf(j) === -1) bbRemove.push(j);
+        }
+      }
+    }
+    for (let ri = bbRemove.length - 1; ri >= 0; ri--) balls.splice(bbRemove[ri], 1);
+  }
+
+  function updateClones(state, dt) {
+    const clones = state.run.clones;
+    if (!clones) return;
+    const wI = C.WALL_THICKNESS / 2 + C.CAT_RADIUS;
+    const toSpawn = [];
+    for (let i = clones.length - 1; i >= 0; i--) {
+      const cl = clones[i];
+      cl.x += cl.vx * dt;
+      cl.y += cl.vy * dt;
+      if (cl.x < wI)         { cl.x = wI;         cl.vx =  Math.abs(cl.vx); }
+      if (cl.x > C.W - wI)   { cl.x = C.W - wI;   cl.vx = -Math.abs(cl.vx); }
+      if (cl.y < wI)         { cl.y = wI;         cl.vy =  Math.abs(cl.vy); }
+      if (cl.y > C.H - wI)   { cl.y = C.H - wI;   cl.vy = -Math.abs(cl.vy); }
+      cl.age += dt;
+      if (cl.age >= cl.lifetime) { clones.splice(i, 1); continue; }
+      cl.spawnTimer -= dt;
+      if (cl.spawnTimer <= 0) {
+        cl.spawnTimer = C.CLONE_SPAWN_INTERVAL;
+        if (clones.length + toSpawn.length < C.CLONE_MAX_COUNT) {
+          const th = Math.random() * Math.PI * 2;
+          toSpawn.push({
+            x: cl.x, y: cl.y, r: cl.r,
+            vx: C.CLONE_SPEED * Math.cos(th),
+            vy: C.CLONE_SPEED * Math.sin(th),
+            age: 0, lifetime: cl.lifetime,
+            spawnTimer: C.CLONE_SPAWN_INTERVAL,
+          });
+        }
+      }
+    }
+    for (let j = 0; j < toSpawn.length; j++) clones.push(toSpawn[j]);
   }
 
   function updateComboPopups(state, dt) {
@@ -389,6 +464,7 @@
     updateComboPopups: updateComboPopups,
     updateParticles: updateParticles,
     updateBumperPhysics: updateBumperPhysics,
+    updateClones: updateClones,
     computeTrajectory: computeTrajectory,
   };
 }());

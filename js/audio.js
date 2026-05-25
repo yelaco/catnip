@@ -104,7 +104,7 @@
     src.start(); src.stop(audioCtx.currentTime + 0.04);
   }
 
-  // toneIndex: 0=shield(400Hz square), 1=dash(600Hz square), 2=teleport(800Hz square)
+  // toneIndex: 0=shield(400Hz square), 1=clone(600Hz square), 2=unused(800Hz square)
   function playAbilityTone(toneIndex) {
     if (!audioCtx) return;
     var freqs = [400, 600, 800];

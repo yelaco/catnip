@@ -52,9 +52,7 @@
     }
   }
 
-  // Returns effective cat speed cap accounting for dash exemption (Cerebro decision)
   function getEffectiveCatSpeedCap(state) {
-    if (state.run.cat && (state.run.cat.activeAbility === 'dash')) return C.CAT_MAX_SPEED;
     var artifact = getEquippedArtifact(state);
     if (artifact && artifact.effect && artifact.effect.type === 'cat_speed_cap_multiplier') {
       return C.CAT_INITIAL_SPEED * artifact.effect.value;
@@ -87,47 +85,36 @@
       cat.abilityTimer = 4;
       cat.abilityCooldowns.shield = 12;
       state.run.pendingAudio.push('abilityTone:0');
-    } else if (name === 'dash') {
-      // Rotate velocity to random angle, scale by 2.5, clamp to CAT_MAX_SPEED
-      var dashAngle = Math.random() * Math.PI * 2;
-      var dashSpd = Math.hypot(cat.vx, cat.vy) * 2.5;
-      if (dashSpd > C.CAT_MAX_SPEED) dashSpd = C.CAT_MAX_SPEED;
-      cat.vx = Math.cos(dashAngle) * dashSpd;
-      cat.vy = Math.sin(dashAngle) * dashSpd;
-      cat.speed = dashSpd;
-      cat.activeAbility = 'dash';
-      cat.abilityTimer = 0.5;
-      cat.abilityCooldowns.dash = 8;
-      state.run.pendingAudio.push('abilityTone:1');
-    } else if (name === 'teleport') {
-      cat.activeAbility = 'teleport_fade';
-      cat.abilityTimer = 0.3;
-      cat.abilityCooldowns.teleport = 15;
-      state.run.pendingAudio.push('abilityTone:2');
-    }
-  }
-
-  function _repositionCatRandom(cat, state) {
-    var wI = C.WALL_THICKNESS / 2 + cat.r + 4;
-    var bumpers = state.run.bumpers || [];
-    var attempts = 0;
-    while (attempts < 50) {
-      var nx = wI + Math.random() * (C.W - 2 * wI);
-      var ny = wI + Math.random() * (C.H - 2 * wI);
-      var clear = true;
-      for (var i = 0; i < bumpers.length; i++) {
-        var bmp = bumpers[i];
-        if (Math.hypot(nx - bmp.x, ny - bmp.y) < C.BUMPER_RADIUS + cat.r + 4) {
-          clear = false;
-          break;
+    } else if (name === 'clone') {
+      var wI2 = C.WALL_THICKNESS / 2 + C.CAT_RADIUS + 8;
+      var bumpers = state.run.bumpers || [];
+      var cx2 = 0, cy2 = 0;
+      var placed = false;
+      for (var att = 0; att < 40; att++) {
+        cx2 = wI2 + Math.random() * (C.W - 2 * wI2);
+        cy2 = wI2 + Math.random() * (C.H - 2 * wI2);
+        if (Math.hypot(cx2 - cat.x, cy2 - cat.y) < C.CAT_RADIUS * 3) continue;
+        var ok = true;
+        for (var bi2 = 0; bi2 < bumpers.length; bi2++) {
+          if (Math.hypot(cx2 - bumpers[bi2].x, cy2 - bumpers[bi2].y) < C.BUMPER_RADIUS + C.CAT_RADIUS + 4) { ok = false; break; }
         }
+        if (ok) { placed = true; break; }
       }
-      if (clear) { cat.x = nx; cat.y = ny; return; }
-      attempts++;
+      if (!placed) { cx2 = C.W / 2; cy2 = C.H / 3; }
+      var theta2 = Math.random() * Math.PI * 2;
+      state.run.clones = state.run.clones || [];
+      state.run.clones.push({
+        x: cx2, y: cy2, r: cat.r,
+        vx: C.CLONE_SPEED * Math.cos(theta2),
+        vy: C.CLONE_SPEED * Math.sin(theta2),
+        age: 0, lifetime: C.ABILITY_DURATION_CLONE,
+        spawnTimer: C.CLONE_SPAWN_INTERVAL,
+      });
+      cat.activeAbility = 'clone';
+      cat.abilityTimer = C.ABILITY_DURATION_CLONE;
+      cat.abilityCooldowns.clone = C.ABILITY_COOLDOWN_CLONE;
+      state.run.pendingAudio.push('abilityTone:1');
     }
-    // Fallback to center
-    cat.x = C.W / 2;
-    cat.y = C.H / 2;
   }
 
   // Per-frame ability system: tick timers, tick cooldowns, trigger speed-tier abilities.
@@ -138,29 +125,20 @@
     // Tick timers (seconds)
     if (cat.abilityTimer > 0) cat.abilityTimer = Math.max(0, cat.abilityTimer - dt);
     cat.abilityCooldowns.shield   = Math.max(0, cat.abilityCooldowns.shield   - dt);
-    cat.abilityCooldowns.dash     = Math.max(0, cat.abilityCooldowns.dash     - dt);
-    cat.abilityCooldowns.teleport = Math.max(0, cat.abilityCooldowns.teleport - dt);
+    cat.abilityCooldowns.clone    = Math.max(0, cat.abilityCooldowns.clone    - dt);
 
     // Handle active ability expiry
     if (cat.activeAbility && cat.abilityTimer <= 0) {
-      if (cat.activeAbility === 'teleport_fade') {
-        // Phase 2: reposition and switch to appear phase
-        _repositionCatRandom(cat, state);
-        cat.activeAbility = 'teleport_appear';
-        cat.abilityTimer = 0.15;
-      } else {
-        // Ability ended — activate pending if queued
-        cat.activeAbility = null;
-        if (cat.pendingAbility) {
-          var p = cat.pendingAbility;
-          cat.pendingAbility = null;
-          _activateAbility(cat, p, state);
-        }
+      // Ability ended — activate pending if queued
+      cat.activeAbility = null;
+      if (cat.pendingAbility) {
+        var p = cat.pendingAbility;
+        cat.pendingAbility = null;
+        _activateAbility(cat, p, state);
       }
     }
 
-    // Apply slow-mo speed cap before tier check — ensures cap suppresses ability
-    // triggers from speed spikes (dash exempt during active dash window)
+    // Apply slow-mo speed cap before tier check — ensures cap suppresses ability triggers
     var spd = Math.hypot(cat.vx, cat.vy);
     var cap = getEffectiveCatSpeedCap(state);
     var wasCapped = false;
@@ -178,17 +156,14 @@
 
     // Ability triggers suppressed when artifact cap is actively clamping speed
     if (!wasCapped && !cat.activeAbility) {
-      if (ratio > C.ABILITY_TIER_TELEPORT && cat.abilityCooldowns.teleport === 0) {
-        _activateAbility(cat, 'teleport', state);
-      } else if (ratio > C.ABILITY_TIER_DASH && cat.abilityCooldowns.dash === 0) {
-        _activateAbility(cat, 'dash', state);
+      if (ratio > C.ABILITY_TIER_CLONE && cat.abilityCooldowns.clone === 0) {
+        _activateAbility(cat, 'clone', state);
       } else if (ratio > C.ABILITY_TIER_SHIELD && cat.abilityCooldowns.shield === 0) {
         _activateAbility(cat, 'shield', state);
       }
     } else if (!wasCapped && cat.activeAbility) {
       // Queue pending — highest unlocked threshold wins
-      var want = ratio > C.ABILITY_TIER_TELEPORT ? 'teleport'
-        : ratio > C.ABILITY_TIER_DASH ? 'dash'
+      var want = ratio > C.ABILITY_TIER_CLONE ? 'clone'
         : ratio > C.ABILITY_TIER_SHIELD ? 'shield' : null;
       if (want && want !== cat.activeAbility) cat.pendingAbility = want;
     }
