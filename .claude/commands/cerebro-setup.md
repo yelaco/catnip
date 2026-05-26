@@ -109,7 +109,7 @@ Ask the user whether they want to enable semble for semantic code search:
    ```
    - **`uv` found:**
      ```bash
-     claude mcp add semble -s user -- uvx --from "semble[mcp]" semble
+     claude mcp add semble -s user -- uvx --from "semble[mcp]" --with model2vec semble
      ```
    - **`pip` found (no `uv`):** Install semble first, then register with the bare command:
      ```bash
@@ -125,23 +125,31 @@ Ask the user whether they want to enable semble for semantic code search:
      
      Set semble status to `SKIPPED (no installer)` in the summary and do not create the integration file.
 
-3. Create `.cerebro/integrations/semble.md` with this exact content:
+3. Create `.cerebro/integrations/semble.md` **only if it does not already exist**. If the file is already present, skip this step — do not overwrite it. If it is absent, write it with this exact content (copy from `.cerebro/integrations/semble.md` in the upstream template if present, otherwise write verbatim):
 
 ```markdown
 # Semble — Semantic Code Search
 
-Semble is installed as an MCP server. Nightcrawler should prefer it over grep for natural-language queries.
+Semble is installed as an MCP server. The following teammates should prefer it over grep for natural-language and conceptual queries: **Nightcrawler**, **Wolverine**, and **Forge**.
 
 ## MCP Tools
 
-- `search(query, repo)` — natural-language or identifier search; `repo` is a local path or git URL; defaults to the current working directory.
-- `find_related(file_path, line, repo)` — find chunks semantically similar to the code at a given file location.
+- `mcp__semble__search(query, repo)` — natural-language or identifier search; `repo` is a local path or git URL; defaults to the current working directory.
+- `mcp__semble__find_related(file_path, line, repo)` — find chunks semantically similar to the code at a given file location.
 
 ## When to Use Semble
 
-- Conceptual / natural-language queries → `search`
-- "Find code similar to X" → `find_related`
+- Conceptual / natural-language queries → `mcp__semble__search`
+- "Find code similar to X" → `mcp__semble__find_related`
 - Exhaustive exact-string or regex matching → use `grep` (semble is not a text matcher)
+
+## Per-Teammate Guidance
+
+**Nightcrawler** — primary user. Prefer semble for all conceptual queries; fall back to grep only for exact-string or regex matching.
+
+**Wolverine** — use `mcp__semble__search` before implementing to find existing patterns, conventions, and similar code to avoid duplication. Use `mcp__semble__find_related` to discover all call sites when changing an interface.
+
+**Forge** — use `mcp__semble__search` to locate architectural examples and assess how widely a pattern is used before recommending changes. Use `mcp__semble__find_related` to find the blast radius of a design decision.
 
 ## Indexing for Repeated Searches
 
