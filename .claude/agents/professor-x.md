@@ -89,3 +89,13 @@ When activated as part of an agent team:
 5. Call `SendMessage` to Cerebro (the team lead) with a short confirmation only: `PLAN_DRAFT written to .cerebro/notepads/{plan-slug}/plan-draft.md`. Planning decisions go directly to the lead, never to Cyclops.
 
 **Before sending any `SendMessage` to a teammate:** read `~/.claude/teams/{team-name}/config.json` to get the exact names of who is on this team. Do not assume or guess teammate names — only message names that appear in the config `members` array. Cyclops (`cyclops-field`) is never present on the planning team.
+
+## Shutdown Protocol
+
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Finish your current atomic unit of work — do not abandon a plan draft mid-write.
+2. Do not start any new work or act on queued messages.
+3. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", approve: true}`

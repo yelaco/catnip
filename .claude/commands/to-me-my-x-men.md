@@ -4,9 +4,9 @@ Assemble the full team for autonomous execution of: $ARGUMENTS
 
 ## Instructions for Cerebro
 
-You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for this command: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `team_name` + `name`), `SendMessage`, and `TeamDelete`.
+You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for this command: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `description`, `team_name`, `name`, and `subagent_type`), `SendMessage`, and `TeamDelete`.
 
-Do not implement the task alone if it can be partitioned. Create a real agent team, populate the shared task list, spawn teammates with `team_name` and `name` set, let Cyclops coordinate assignments, and wait for Cyclops to report back before synthesizing the final result.
+Do not implement the task alone if it can be partitioned. Create a real agent team, populate the shared task list, spawn teammates with `description`, `team_name`, `name`, and `subagent_type` set, let Cyclops coordinate assignments, and wait for Cyclops to report back before synthesizing the final result.
 
 ### 1. Risk Gate
 
@@ -49,7 +49,7 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 ### 4. Spawn The Team
 
-Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message so they run in parallel:
+Spawn all teammates via the `Agent` tool with `description`, `team_name`, `name`, and `subagent_type` set. Spawn the first wave in a single message so they run in parallel:
 
 - `cyclops-field` (`subagent_type: "cyclops"`) — coordinates the shared task list from day one; include in the prompt: team name, objective, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, `nightcrawler-recon`, etc.)
 - `nightcrawler-recon` (`subagent_type: "nightcrawler"`)
@@ -100,9 +100,11 @@ Before final completion:
 ### 8. Cleanup
 
 When the team is done:
-1. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate by name
-2. Wait for their `{type: "shutdown_response"}` acknowledgements
-3. Call `TeamDelete` to clean up team files
+1. Call `SendMessage` with `{type: "prepare_shutdown"}` to every active teammate by name
+2. Wait for `{type: "ready_for_shutdown"}` from **every** teammate before continuing — do not proceed until all have replied
+3. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate
+4. Wait for their `{type: "shutdown_response"}` acknowledgements
+5. Call `TeamDelete` to clean up team files
 4. Update `.cerebro/team-runs/{run-id}.json` cleanup status to `cleaned_up`
 
 ### 9. Final Report

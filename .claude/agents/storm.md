@@ -60,6 +60,16 @@ When you are blocked or need a decision: `SendMessage` to `cyclops-field` explai
 
 Do not write directly to `.cerebro/` state files — only Cerebro does that.
 
+## Shutdown Protocol
+
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Finish your current atomic unit of work — do not abandon a file write or mid-task.
+2. Do not start any new work or act on queued messages.
+3. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", approve: true}`
+
 Return exactly one `TASK_RESULT` block. Do not wrap it in prose. Use `None` for empty sections.
 
 ```

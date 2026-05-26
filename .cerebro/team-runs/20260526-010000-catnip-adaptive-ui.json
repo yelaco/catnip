@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "run_id": "20260526-010000-catnip-adaptive-ui",
+  "command": "/to-me-my-x-men",
+  "status": "complete",
+  "lead": "cerebro",
+  "team_name": "catnip-adaptive-ui",
+  "objective": "Enhance ball type indicator in HUD (NEXT ball prominence + labels) + make canvas responsive to viewport",
+  "risk_level": "MEDIUM",
+  "started_at": "2026-05-26T00:00:00Z",
+  "updated_at": "2026-05-26T00:00:00Z",
+  "teammates": [
+    {
+      "name": "cyclops-field",
+      "agent_type": "cyclops",
+      "status": "active",
+      "responsibility": "Coordinate tasks, verify results, report to Cerebro",
+      "last_signal": ""
+    },
+    {
+      "name": "storm-ui",
+      "agent_type": "storm",
+      "status": "idle",
+      "responsibility": "Implement HUD ball indicator (Task #1) and responsive canvas (Task #2)",
+      "last_signal": ""
+    },
+    {
+      "name": "beast-review",
+      "agent_type": "beast",
+      "status": "idle",
+      "responsibility": "Review both changes for correctness (Task #3)",
+      "last_signal": ""
+    }
+  ],
+  "ownership": [
+    {
+      "path": "js/render.js",
+      "owner": "storm-ui",
+      "reviewer": "beast-review",
+      "notes": "drawHUD powerup queue section"
+    },
+    {
+      "path": "js/input.js",
+      "owner": "storm-ui",
+      "reviewer": "beast-review",
+      "notes": "pointer coordinate scaling for responsive canvas"
+    },
+    {
+      "path": "index.html",
+      "owner": "storm-ui",
+      "reviewer": "beast-review",
+      "notes": "canvas CSS max-width + aspect-ratio"
+    }
+  ],
+  "mailbox_decisions": [],
+  "approvals": [],
+  "verification": [
+    {
+      "command": "node -e \"require('fs').readFileSync('js/render.js','utf8'); console.log('OK')\"",
+      "status": "NOT RUN",
+      "by": "beast-review",
+      "notes": ""
+    },
+    {
+      "command": "node -e \"require('fs').readFileSync('js/input.js','utf8'); console.log('OK')\"",
+      "status": "NOT RUN",
+      "by": "beast-review",
+      "notes": ""
+    }
+  ],
+  "cleanup": {
+    "team_stopped": false,
+    "pending_todos_clear": false,
+    "notes": ""
+  }
+}

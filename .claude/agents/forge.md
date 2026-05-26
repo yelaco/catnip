@@ -58,3 +58,13 @@ When activated as part of an agent team:
    - Otherwise → send to `cerebro`
 
 When you need to flag a conflict or ask a design question: apply the same routing to reach the right coordinator.
+
+## Shutdown Protocol
+
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Finish your current atomic unit of work — do not abandon an architecture review mid-analysis.
+2. Do not start any new work or act on queued messages.
+3. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", approve: true}`

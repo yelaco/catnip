@@ -4,7 +4,7 @@ Plan this work: $ARGUMENTS
 
 ## Instructions for Cerebro
 
-You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for planning: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `team_name` + `name`), `SendMessage`, and `TeamDelete`.
+You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for planning: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `description`, `team_name`, `name`, and `subagent_type`), `SendMessage`, and `TeamDelete`.
 
 ### 1. Interview
 
@@ -34,7 +34,7 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 ### 4. Spawn The Planning Team
 
-Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message:
+Spawn all teammates via the `Agent` tool with `description`, `team_name`, `name`, and `subagent_type` set. Spawn the first wave in a single message:
 
 - `professor-planner` (`subagent_type: "professor-x"`) — drafts the canonical Cerebro plan; give it the objective, constraints, and plan template path
 - `nightcrawler-recon` (`subagent_type: "nightcrawler"`)
@@ -86,9 +86,11 @@ As lead, Cerebro must:
 ### 7. Cleanup
 
 When the plan is written:
-1. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate by name
-2. Wait for their `{type: "shutdown_response"}` acknowledgements
-3. Call `TeamDelete` to clean up team files
+1. Call `SendMessage` with `{type: "prepare_shutdown"}` to every active teammate by name
+2. Wait for `{type: "ready_for_shutdown"}` from **every** teammate before continuing — do not proceed until all have replied
+3. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate
+4. Wait for their `{type: "shutdown_response"}` acknowledgements
+5. Call `TeamDelete` to clean up team files
 4. Update `.cerebro/team-runs/{run-id}.json` cleanup status to `cleaned_up`
 
 ### 8. Save

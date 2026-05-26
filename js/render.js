@@ -374,15 +374,17 @@
     const speed = (clampedM / BALL_MAX_DRAG) * BALL_MAX_SPEED;
     const vx = (dx / m) * speed;
     const vy = (dy / m) * speed;
+    const powerRatio = clampedM / BALL_MAX_DRAG;
 
-    const trajectory = _computeTrajectory(THROWER_X, THROWER_Y - 10, vx, vy, GUIDE_MAX_BOUNCES);
+    const guideBounces = Math.max(1, Math.ceil(powerRatio * GUIDE_MAX_BOUNCES));
+    const trajectory = _computeTrajectory(THROWER_X, THROWER_Y - 10, vx, vy, guideBounces);
 
     const segmentOpacities = [0.8, 0.5, 0.25, 0.1];
     const segColors = ['rgba(74,222,128,', 'rgba(56,189,248,', 'rgba(167,139,250,', 'rgba(244,114,182,', 'rgba(251,146,60,'];
     const bouncePoints = [];
 
     ctx.save();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.5 + powerRatio * 2.5;
     ctx.setLineDash([8, 6]);
     const dashOffset = (state.run && state.run.guideDashOffset != null)
       ? state.run.guideDashOffset
@@ -419,6 +421,61 @@
       ctx.arc(bp.x, bp.y, 4, 0, Math.PI * 2);
       ctx.stroke();
     }
+
+    if (trajectory.length > 1) {
+      const endPt = trajectory[trajectory.length - 1];
+      const endSegIdx = endPt.bounceIndex;
+      const endOpacity = segmentOpacities[Math.min(endSegIdx, segmentOpacities.length - 1)];
+      ctx.fillStyle = segColors[Math.min(endSegIdx, segColors.length - 1)] + endOpacity + ')';
+      ctx.beginPath();
+      ctx.arc(endPt.x, endPt.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    drawPowerBar(ctx, powerRatio, THROWER_X, THROWER_Y);
+
+    ctx.restore();
+  }
+
+  function drawPowerBar(ctx, powerRatio, throwerX, throwerY) {
+    const barW = 80;
+    const barH = 10;
+    const barX = throwerX - barW / 2;
+    const barY = throwerY + 30;
+
+    ctx.save();
+
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('POWER', throwerX, barY - 4);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.roundRect(barX, barY, barW, barH, 3);
+    ctx.fill();
+
+    if (powerRatio > 0) {
+      const grad = ctx.createLinearGradient(barX, 0, barX + barW, 0);
+      grad.addColorStop(0, '#4ade80');
+      grad.addColorStop(0.5, '#facc15');
+      grad.addColorStop(1, '#f87171');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(barX, barY, barW * powerRatio, barH, 3);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(barX, barY, barW, barH, 3);
+    ctx.stroke();
+
+    ctx.font = 'bold 9px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fillText(Math.round(powerRatio * 100) + '%', barX + barW - 3, barY + barH - 2);
 
     ctx.restore();
   }
@@ -869,31 +926,82 @@
     ctx.fillText(`Coins: ${coins}`, C.W - 56, 16);
     ctx.shadowBlur = 0;
 
-    // Power-up queue icons — top-center, 5 small circles
+    // Power-up queue — NEXT ball prominent, upcoming queue to the right
     const queue = (state.run && state.run.powerupQueue) ? state.run.powerupQueue : [];
     const queueColors = { normal: '#ffffff', explosive: '#ff6600', multiball: '#00ccff', magnet: '#cc44ff' };
-    const iconR = 10;
-    const iconGap = 26;
-    const iconY = 20;
-    const iconStartX = C.W / 2 - (4 * iconGap) / 2;
-    for (let i = 0; i < 5; i++) {
-      const type = queue[i] || null;
-      const color = type ? (queueColors[type] || '#888888') : 'rgba(255,255,255,0.15)';
-      const ix = iconStartX + i * iconGap;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(ix, iconY, iconR, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      if (type) {
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = color;
-      }
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
+    const queueLabels = { normal: 'NRM', explosive: 'EXP', multiball: 'MLT', magnet: 'MAG' };
+    const nextType = queue[0] || null;
+    const nextColor = nextType ? (queueColors[nextType] || '#888888') : 'rgba(255,255,255,0.2)';
+    const nextX = C.W / 2 - 70;
+    const queueY = 28;
+
+    ctx.save();
+
+    // "NEXT" label above the next ball
+    ctx.font = 'bold 8px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('NEXT', nextX, queueY - 20);
+
+    // NEXT ball — large circle with glow ring
+    ctx.beginPath();
+    ctx.arc(nextX, queueY, 16, 0, Math.PI * 2);
+    ctx.fillStyle = nextColor;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = nextColor;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    // White pulsing ring
+    ctx.beginPath();
+    ctx.arc(nextX, queueY, 20, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(nextX, queueY, 16, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Type label below NEXT ball
+    if (nextType) {
+      ctx.font = 'bold 8px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.shadowBlur = 0;
+      ctx.fillText(queueLabels[nextType] || nextType.slice(0,3).toUpperCase(), nextX, queueY + 26);
     }
+
+    // Upcoming balls (queue[1..4]) — smaller, to the right
+    const upcomingStartX = C.W / 2 - 10;
+    for (let i = 1; i <= 4; i++) {
+      const type = queue[i] || null;
+      const color = type ? (queueColors[type] || '#888888') : 'rgba(255,255,255,0.12)';
+      const ix = upcomingStartX + (i - 1) * 22;
+      ctx.globalAlpha = type ? 0.7 : 0.4;
+      ctx.beginPath();
+      ctx.arc(ix, queueY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      if (type) { ctx.shadowBlur = 5; ctx.shadowColor = color; }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(ix, queueY, 8, 0, Math.PI * 2);
+      ctx.stroke();
+      if (type) {
+        ctx.globalAlpha = 0.65;
+        ctx.font = '7px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.shadowBlur = 0;
+        ctx.fillText(queueLabels[type] || type.slice(0,3).toUpperCase(), ix, queueY + 17);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
 
     ctx.restore();
   }

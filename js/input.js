@@ -99,9 +99,11 @@
       if (state.ui.currentState !== GS.PLAYING) return;
       if (state.run.gameOver) return;
       const rect = canvas.getBoundingClientRect();
+      const scaleX = C.W / rect.width;
+      const scaleY = C.H / rect.height;
       state.input.drag = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
       };
       state.input.dragCurrent = { x: state.input.drag.x, y: state.input.drag.y };
       canvas.setPointerCapture(e.pointerId);
@@ -110,8 +112,10 @@
     // ── pointermove ────────────────────────────────────────────────────────────
     canvas.addEventListener('pointermove', function (e) {
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const scaleX = C.W / rect.width;
+      const scaleY = C.H / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
       const mb = muteBtnRect;
       state.ui.muteBtnHover = mx >= mb.x && mx <= mb.x + mb.w && my >= mb.y && my <= mb.y + mb.h;
 
@@ -153,8 +157,10 @@
     // ── pointerup ──────────────────────────────────────────────────────────────
     canvas.addEventListener('pointerup', function (e) {
       const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const scaleX = C.W / rect.width;
+      const scaleY = C.H / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
 
       // Mute button — all states
       const mb = muteBtnRect;

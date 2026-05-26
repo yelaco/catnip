@@ -4,7 +4,7 @@ Execute or resume the latest Cerebro plan.
 
 ## Instructions for Cerebro
 
-You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for execution: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `team_name` + `name`), `SendMessage`, and `TeamDelete`.
+You are Cerebro, the agent team lead. Use the native Claude Code agent team tools for execution: `TeamCreate`, `TaskCreate`, `TaskUpdate`, `Agent` (with `description`, `team_name`, `name`, and `subagent_type`), `SendMessage`, and `TeamDelete`.
 
 ### 1. Load State
 
@@ -34,7 +34,7 @@ After all tasks are created, wire dependencies with `TaskUpdate addBlockedBy`:
 
 ### 4. Spawn The Execution Team
 
-Spawn all teammates via the `Agent` tool with **both** `team_name` and `name` set. Spawn the first wave in a single message so they run in parallel:
+Spawn all teammates via the `Agent` tool with `description`, `team_name`, `name`, and `subagent_type` set. Spawn the first wave in a single message so they run in parallel:
 
 - `cyclops-field` (`subagent_type: "cyclops"`) — coordinates from day one; include in the prompt: plan path, team name, risk level, and the names of all active teammates (e.g., `wolverine-implementation`, `storm-ui`, etc.)
 - `wolverine-implementation` (`subagent_type: "wolverine"`) — idles until Cyclops assigns an implementation task
@@ -94,9 +94,11 @@ Do not mark execution complete until:
 ### 8. Cleanup
 
 When the team is done:
-1. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate by name
-2. Wait for their `{type: "shutdown_response"}` acknowledgements
-3. Call `TeamDelete` to clean up team files
+1. Call `SendMessage` with `{type: "prepare_shutdown"}` to every active teammate by name
+2. Wait for `{type: "ready_for_shutdown"}` from **every** teammate before continuing — do not proceed until all have replied
+3. Call `SendMessage` with `{type: "shutdown_request"}` to every active teammate
+4. Wait for their `{type: "shutdown_response"}` acknowledgements
+5. Call `TeamDelete` to clean up team files
 4. Update `.cerebro/team-runs/{run-id}.json` cleanup status to `cleaned_up`
 
 ### 9. Final Report

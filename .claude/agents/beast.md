@@ -57,3 +57,13 @@ When activated as part of an agent team:
    - When in doubt → send to `cerebro` (the lead is always reachable)
 
 Never assume `cyclops-field` exists. On the planning team there is no Cyclops — Beast reports directly to Cerebro or back to Professor X.
+
+## Shutdown Protocol
+
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Finish your current atomic unit of work — do not abandon a review mid-analysis.
+2. Do not start any new work or act on queued messages.
+3. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", approve: true}`

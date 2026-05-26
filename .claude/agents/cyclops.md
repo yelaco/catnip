@@ -107,6 +107,11 @@ RISKS:
 - [remaining risks or deferred issues, or None]
 ```
 
-## On Shutdown Request
+## Shutdown Protocol
 
-When Cerebro sends `{type: "shutdown_request"}`, respond immediately with `{type: "shutdown_response", request_id: "...", approve: true}`. Do not start new work.
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Stop assigning new tasks. Do not send any further messages to teammates.
+2. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", request_id: "...", approve: true}`

@@ -50,3 +50,13 @@ When activated as part of an agent team:
    - Otherwise → send to `cerebro` (planning team — Cyclops is not present)
 
 When you reject work: send every issue that must be resolved before re-review to the same recipient determined above.
+
+## Shutdown Protocol
+
+When Cerebro sends `{type: "prepare_shutdown"}`:
+1. Finish your current atomic unit of work — do not abandon a validation mid-verdict.
+2. Do not start any new work or act on queued messages.
+3. Reply: `{type: "ready_for_shutdown"}`
+
+When Cerebro sends `{type: "shutdown_request"}`:
+- Reply immediately: `{type: "shutdown_response", approve: true}`
