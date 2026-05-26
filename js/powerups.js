@@ -6,8 +6,6 @@
 
   var C = window.Catnip.constants;
 
-  var EXPLOSIVE_RADIUS = 80;
-  var EXPLOSIVE_LIFETIME = 0.4; // seconds
   var MAGNET_ACCEL = 600;       // px/s²
   var MAGNET_MAX_SPEED = 900;   // px/s
   var MULTIBALL_SPREAD = Math.PI / 6; // 30° fan between children (±30°)
@@ -48,9 +46,9 @@
     state.run.explosionZones.push({
       x: ball.x,
       y: ball.y,
-      radius: EXPLOSIVE_RADIUS,
+      radius: C.EXPLOSIVE_RADIUS,
       age: 0,
-      lifetime: EXPLOSIVE_LIFETIME,
+      lifetime: C.EXPLOSIVE_LIFETIME,
     });
 
     var run = state.run;

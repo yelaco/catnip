@@ -157,13 +157,13 @@ All plans, state, and wisdom live in `.cerebro/`:
 
 ## Integrations
 
-Before dispatching Nightcrawler for codebase search, check whether `.cerebro/integrations/` contains any enabled tool integration files:
+Before spawning any teammate that searches or reads the codebase, check whether `.cerebro/integrations/` contains any enabled tool integration files:
 
 ```bash
 ls .cerebro/integrations/ 2>/dev/null
 ```
 
-If files are present, read them and append their instructions to the Nightcrawler spawn prompt so the teammate knows which tools to prefer. Integration files are opt-in — written by `/cerebro-setup`, never by upgrade.
+If files are present, read them and append their instructions to the spawn prompt of **Nightcrawler**, **Wolverine**, and **Forge** so each teammate knows which tools to prefer. Integration files are opt-in — written by `/cerebro-setup`, never by upgrade.
 
 ## Wisdom Accumulation
 

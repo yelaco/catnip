@@ -896,6 +896,69 @@
     }
   }
 
+  function drawBallTypeIcon(ctx, type, cx, cy, r) {
+    ctx.save();
+    ctx.shadowBlur = 0;
+    switch (type) {
+      case 'magnet': {
+        const mr = r * 0.52;
+        // U-shaped arc body
+        ctx.beginPath();
+        ctx.arc(cx, cy - r * 0.08, mr, Math.PI, 0, false);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = r * 0.3;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        // Left pole cap (red)
+        ctx.beginPath();
+        ctx.arc(cx - mr, cy - r * 0.08, r * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = '#ff4444';
+        ctx.fill();
+        // Right pole cap (blue)
+        ctx.beginPath();
+        ctx.arc(cx + mr, cy - r * 0.08, r * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = '#4488ff';
+        ctx.fill();
+        break;
+      }
+      case 'explosive': {
+        const spikes = 8;
+        const outerR = r * 0.55;
+        const innerR = r * 0.28;
+        ctx.beginPath();
+        for (let j = 0; j < spikes * 2; j++) {
+          const angle = (j * Math.PI / spikes) - Math.PI / 2;
+          const rad = j % 2 === 0 ? outerR : innerR;
+          if (j === 0) ctx.moveTo(cx + Math.cos(angle) * rad, cy + Math.sin(angle) * rad);
+          else ctx.lineTo(cx + Math.cos(angle) * rad, cy + Math.sin(angle) * rad);
+        }
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.fill();
+        break;
+      }
+      case 'multiball': {
+        const br = r * 0.22;
+        const positions = [
+          { dx: 0,        dy: -r * 0.32 },
+          { dx: -r * 0.28, dy:  r * 0.2  },
+          { dx:  r * 0.28, dy:  r * 0.2  },
+        ];
+        positions.forEach(({ dx, dy }) => {
+          ctx.beginPath();
+          ctx.arc(cx + dx, cy + dy, br, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.9)';
+          ctx.fill();
+        });
+        break;
+      }
+      // 'normal' — no icon, plain circle communicates "regular"
+      default:
+        break;
+    }
+    ctx.restore();
+  }
+
   function drawHUD(ctx, state, palette) {
     const score = (state.run && state.run.score != null) ? state.run.score : 0;
     const ballsRemaining = (state.run && state.run.ballsRemaining != null) ? state.run.ballsRemaining : 0;
@@ -929,7 +992,6 @@
     // Power-up queue — NEXT ball prominent, upcoming queue to the right
     const queue = (state.run && state.run.powerupQueue) ? state.run.powerupQueue : [];
     const queueColors = { normal: '#ffffff', explosive: '#ff6600', multiball: '#00ccff', magnet: '#cc44ff' };
-    const queueLabels = { normal: 'NRM', explosive: 'EXP', multiball: 'MLT', magnet: 'MAG' };
     const nextType = queue[0] || null;
     const nextColor = nextType ? (queueColors[nextType] || '#888888') : 'rgba(255,255,255,0.2)';
     const nextX = C.W / 2 - 70;
@@ -963,13 +1025,9 @@
     ctx.arc(nextX, queueY, 16, 0, Math.PI * 2);
     ctx.stroke();
 
-    // Type label below NEXT ball
+    // Icon inside NEXT ball
     if (nextType) {
-      ctx.font = 'bold 8px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.shadowBlur = 0;
-      ctx.fillText(queueLabels[nextType] || nextType.slice(0,3).toUpperCase(), nextX, queueY + 26);
+      drawBallTypeIcon(ctx, nextType, nextX, queueY, 16);
     }
 
     // Upcoming balls (queue[1..4]) — smaller, to the right
@@ -992,11 +1050,7 @@
       ctx.stroke();
       if (type) {
         ctx.globalAlpha = 0.65;
-        ctx.font = '7px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#fff';
-        ctx.shadowBlur = 0;
-        ctx.fillText(queueLabels[type] || type.slice(0,3).toUpperCase(), ix, queueY + 17);
+        drawBallTypeIcon(ctx, type, ix, queueY, 8);
       }
       ctx.globalAlpha = 1;
     }

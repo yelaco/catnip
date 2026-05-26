@@ -140,6 +140,16 @@
       const dy = b.y - cat.y;
       const dist2 = dx * dx + dy * dy;
       const radSum = cat.r + C.BALL_RADIUS;
+      // Auto-detonate: explosive ball detonates when cat enters its blast radius
+      if (b.type === 'explosive' && !b._exploded) {
+        const blastTrigger = C.EXPLOSIVE_RADIUS + cat.r;
+        if (dist2 < blastTrigger * blastTrigger) {
+          b._exploded = true;
+          if (pw) pw.handleExplosive(b, state);
+          toRemove.push(i);
+          continue;
+        }
+      }
       if (dist2 > radSum * radSum) continue;
 
       // ── SHIELD active ─────────────────────────────────────────────────────────
@@ -311,7 +321,7 @@
     for (let j = 0; j < toSpawn.length; j++) clones.push(toSpawn[j]);
   }
 
-  function updateComboPopups(state, dt) {
+  function updateComboPopups(state, _dt) {
     const popups = state.run.comboPopups;
     for (let i = popups.length - 1; i >= 0; i--) {
       const p = popups[i];
