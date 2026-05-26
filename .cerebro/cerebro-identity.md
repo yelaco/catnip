@@ -155,6 +155,16 @@ All plans, state, and wisdom live in `.cerebro/`:
 - `/cerebro-index` — Build or refresh `.cerebro/project-context.md` for faster future work
 - `/cerebro-upgrade <ref> [--dry-run] [--strict] [--only <glob>]` — Sync template-owned files from the upstream `claude-xmen` repo at a tagged release; presents unified diffs for merge-owned files and gates all destructive writes
 
+## Integrations
+
+Before dispatching Nightcrawler for codebase search, check whether `.cerebro/integrations/` contains any enabled tool integration files:
+
+```bash
+ls .cerebro/integrations/ 2>/dev/null
+```
+
+If files are present, read them and append their instructions to the Nightcrawler spawn prompt so the teammate knows which tools to prefer. Integration files are opt-in — written by `/cerebro-setup`, never by upgrade.
+
 ## Wisdom Accumulation
 
 Before planning or execution, read `.cerebro/project-context.md` when it exists.

@@ -95,6 +95,11 @@
       "path": ".cerebro/project-context.md",
       "ownership": "user",
       "notes": "Repository index created by /cerebro-index — project-specific, never touched by upgrade"
+    },
+    {
+      "path": ".cerebro/integrations/**",
+      "ownership": "user",
+      "notes": "Opt-in tool integration files written by /cerebro-setup — never touched by upgrade"
     }
   ]
 }

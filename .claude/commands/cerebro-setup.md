@@ -87,7 +87,79 @@ With both versions in hand, report clearly:
 
 ---
 
-### 6. Summary
+### 6. Semble Integration (Optional)
+
+Ask the user whether they want to enable semble for semantic code search:
+
+> **Semble** is an optional MCP integration that gives Nightcrawler natural-language code search — ~98% fewer tokens than grep+read, fully on CPU, no API key.
+>
+> Enable semble? **(yes / no)**
+
+**If yes:**
+
+1. Check whether it is already registered:
+   ```bash
+   claude mcp list 2>/dev/null | grep -i semble && echo "already registered" || echo "not registered"
+   ```
+   If already registered, skip to step 3.
+
+2. Detect the available installer and register the MCP server:
+   ```bash
+   which uv 2>/dev/null && echo "uv" || (which pip3 2>/dev/null || which pip 2>/dev/null) && echo "pip" || echo "none"
+   ```
+   - **`uv` found:**
+     ```bash
+     claude mcp add semble -s user -- uvx --from "semble[mcp]" semble
+     ```
+   - **`pip` found (no `uv`):** Install semble first, then register with the bare command:
+     ```bash
+     pip install "semble[mcp]"
+     claude mcp add semble -s user -- semble
+     ```
+     Report:
+     > Installed semble via pip. If `semble` is not on `$PATH` after install, you may need to restart your shell or add your pip bin directory to `$PATH`.
+   - **Neither found:** Warn the user and skip:
+     > Neither `uv` nor `pip` was found. Install one of them and re-run `/cerebro-setup` to enable semble:
+     > - **uv (recommended):** `curl -LsSf https://astral.sh/uv/install.sh | sh`
+     > - **pip:** ships with Python — install Python from https://python.org
+     
+     Set semble status to `SKIPPED (no installer)` in the summary and do not create the integration file.
+
+3. Create `.cerebro/integrations/semble.md` with this exact content:
+
+```markdown
+# Semble — Semantic Code Search
+
+Semble is installed as an MCP server. Nightcrawler should prefer it over grep for natural-language queries.
+
+## MCP Tools
+
+- `search(query, repo)` — natural-language or identifier search; `repo` is a local path or git URL; defaults to the current working directory.
+- `find_related(file_path, line, repo)` — find chunks semantically similar to the code at a given file location.
+
+## When to Use Semble
+
+- Conceptual / natural-language queries → `search`
+- "Find code similar to X" → `find_related`
+- Exhaustive exact-string or regex matching → use `grep` (semble is not a text matcher)
+
+## Indexing for Repeated Searches
+
+Index once for faster repeated queries:
+​```bash
+semble index . -o .cerebro/semble-index
+​```
+Pass `--index .cerebro/semble-index` to searches. Reindex if the codebase changes significantly.
+```
+
+4. Report:
+   > Semble MCP registered and integration file written to `.cerebro/integrations/semble.md`. Nightcrawler will use it on the next team dispatch.
+
+**If no:** skip silently.
+
+---
+
+### 7. Summary
 
 Print a brief setup report:
 
@@ -97,4 +169,5 @@ cerebro-identity.md  — PRESENT | MISSING
 installed version    — <ref> | unknown
 latest upstream      — <ref> | unreachable
 upgrade needed       — YES | NO | UNKNOWN
+semble integration   — ENABLED | SKIPPED | SKIPPED (no installer)
 ```
