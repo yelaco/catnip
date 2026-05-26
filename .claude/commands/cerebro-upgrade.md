@@ -12,15 +12,33 @@ Upstream remote: `https://github.com/yelaco/claude-xmen.git`
 
 ### 1. Parse and Validate Arguments
 
-Parse `$ARGUMENTS` as: `<ref> [--dry-run] [--strict] [--only <glob>]`
+Parse `$ARGUMENTS` as: `[<ref>] [--dry-run] [--strict] [--only <glob>]`
 
-- `<ref>` — required. A git tag or commit SHA (e.g. `v0.3.0`, `abc1234`). Must be explicit — no branch names, no `HEAD`, no `main`, no `master`.
+- `<ref>` — optional. A git tag or commit SHA (e.g. `v0.3.0`, `abc1234`). Must be explicit — no branch names, no `HEAD`, no `main`, no `master`. If omitted, the latest upstream tag is resolved automatically (see below).
 - `--dry-run` — produce the change report without writing any files.
 - `--strict` — pause Gate C before overwriting any template-owned file whose local content has drifted from the recorded baseline.
 - `--only <glob>` — restrict the upgrade to files matching this glob pattern.
 
 Abort immediately with a clear error if:
-- `<ref>` is empty, `HEAD`, `main`, or `master` — upgrades must reference an explicit release for reproducibility.
+- `<ref>` is explicitly given as `HEAD`, `main`, or `master` — upgrades must reference an explicit release for reproducibility.
+
+**If `<ref>` is omitted**, resolve the latest upstream tag:
+
+```bash
+git ls-remote --tags --sort=-version:refname \
+  https://github.com/yelaco/claude-xmen.git \
+  'refs/tags/v*' | head -1 | sed 's|.*refs/tags/||'
+```
+
+If the command fails or returns no tags, abort with:
+`Could not resolve the latest upstream tag — specify a ref explicitly (e.g. /cerebro-upgrade v0.3.0).`
+
+Otherwise, display the resolved tag to the user:
+
+> **Latest upstream release: `<resolved-tag>`**
+> Proceed with `/cerebro-upgrade <resolved-tag>`?
+
+Use `AskUserQuestion` (or equivalent confirmation prompt) with options **Proceed** and **Cancel**. If the user cancels, abort with no further action. If the user confirms, set `<ref>` to the resolved tag and continue.
 
 ---
 
